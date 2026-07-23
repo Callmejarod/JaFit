@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import users
+from app.routes import users
 
 app = FastAPI(
     title="JaFit API",
