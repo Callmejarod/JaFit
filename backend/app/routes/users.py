@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from app.models.user import User
 from app.models.login import LoginRequest
 from app.database.mongodb import users_collection
 from app.services.security import hash_password, verify_password
-from app.services.auth import create_access_token
+from app.services.auth import create_access_token, get_current_user
 from datetime import datetime, timezone
 
 
@@ -43,11 +44,11 @@ def register_user(user: User):
     }
 
 @router.post("/login")
-def login(login_data: LoginRequest):
+def login(login_data: OAuth2PasswordRequestForm = Depends()):
 
     # Find user by email
     user = users_collection.find_one(
-        {"email": login_data.email}
+        {"email": login_data.username}
     )
 
     # User not found
@@ -77,4 +78,23 @@ def login(login_data: LoginRequest):
     return {
         "access_token": access_token,
         "token_type": "bearer"
+    }
+
+@router.get("/me")
+def get_me(current_user: str = Depends(get_current_user)):
+
+    user = users_collection.find_one(
+        {"email": current_user}
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return {
+        "username" : user["username"],
+        "email": user["email"],
+        "created_at": user["created_at"]
     }

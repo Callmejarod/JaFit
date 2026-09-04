@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
-from jose import jwt
+from jose import jwt, JWTError
 from dotenv import load_dotenv
 import os
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 
 load_dotenv()
 
@@ -30,3 +32,36 @@ def create_access_token(data: dict):
     )
 
     return encode_jwt
+
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        email = payload.get("sub")
+
+        if email is None:
+            return None
+
+        return email
+
+
+    except JWTError:
+        return None
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+
+    email = verify_token(token)
+
+    if email is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
+
+    return email
