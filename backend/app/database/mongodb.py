@@ -12,3 +12,5 @@ client = MongoClient(MONGO_URL)
 database = client["jafit"]
 
 users_collection = database["users"]
+
+workouts_collection = database["workouts"]

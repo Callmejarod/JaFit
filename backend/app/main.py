@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes import users
+from app.routes import workouts
 
 app = FastAPI(
     title="JaFit API",
@@ -8,6 +9,7 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
+app.include_router(workouts.router)
 
 @app.get("/")
 def root():
