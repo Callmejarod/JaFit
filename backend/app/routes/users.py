@@ -17,8 +17,10 @@ router = APIRouter(
 @router.post("/register")
 def register_user(user: User):
 
+    email = str(user.email).strip().lower()
+
     # Check if email already exsist
-    existing_user = users_collection.find_one({"email": user.email})
+    existing_user = users_collection.find_one({"email": email})
 
     if existing_user:
         raise HTTPException(
@@ -46,9 +48,11 @@ def register_user(user: User):
 @router.post("/login")
 def login(login_data: OAuth2PasswordRequestForm = Depends()):
 
+    email = login_data.username.strip().lower()
+
     # Find user by email
     user = users_collection.find_one(
-        {"email": login_data.username}
+        {"email": email}
     )
 
     # User not found
