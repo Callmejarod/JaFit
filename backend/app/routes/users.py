@@ -32,7 +32,7 @@ def register_user(user: User):
 
     user_data = {
         "username": user.username,
-        "email": user.email,
+        "email": email,
         "password_hash": hashed_password,
         "created_at": datetime.now(timezone.utc)
     }
