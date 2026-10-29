@@ -14,3 +14,5 @@ database = client["jafit"]
 users_collection = database["users"]
 
 workouts_collection = database["workouts"]
+
+meals_collection = database["meals"]
